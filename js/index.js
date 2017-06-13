@@ -86,8 +86,37 @@
 		},
 
 		'.confirm click': function(context, $el) {
+		  // 初期化
+		  context.event.preventDefault();
+
+		  // パラメータの設定
+		  var params = {};
+		  var ary = this.$find('form').serializeArray();
+		  for (i in ary) {
+		    params[ary[i].name] = ary[i].value;
+		  }
+		  
+		  // 複数行対応分のエスケープ処理
+		  params.comment = h5.u.str.escapeHtml(params.comment)
+		  
+		  // ビューの設定
+		  this.view.update('.modal-content', 'confirm', params);
+		  
+		  // モーダル表示
+		  this.$find('#confirmModal').modal();
 		},
 
+		'.register click': function(context, $el) {
+		  // Ajaxの擬似的実行
+		  h5.ajax({
+		    type: 'post',
+		    data: this.$find('form').serialize(),
+		    url: '/register'
+		  }).then(function() {
+		    alert('登録しました');
+		    this.$find('#confirmModal').modal('hide');
+		  })
+		}
 	};
 	
 	h5.core.expose(reportController);
